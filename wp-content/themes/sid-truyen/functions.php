@@ -705,6 +705,9 @@ function sid_truyen_modify_archive_query( $query ) {
     }
 
     if ( is_post_type_archive( 'novel' ) || is_tax( 'genre' ) || is_search() ) {
+        if ( is_search() ) {
+            $query->set( 'post_type', 'novel' );
+        }
         $query->set( 'posts_per_page', 36 );
 
         // Handle Sort by Views

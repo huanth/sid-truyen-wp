@@ -21,7 +21,10 @@ function sid_truyen_breadcrumbs() {
 		echo '<li class="inline-block"><a class="hover:text-primary transition-colors" href="' . get_home_url() . '" title="' . $home_title . '">' . $home_title . '</a></li>';
 		echo '<li class="inline-block mx-2 text-gray-400">' . $separator . '</li>';
 		
-		if ( is_archive() && !is_tax() && !is_category() && !is_tag() ) {
+		// Check for Search FIRST to prevent archive logic errors
+		if ( is_search() ) {
+			echo '<li class="inline-block text-gray-700 dark:text-gray-300">Kết quả tìm kiếm cho: ' . get_search_query() . '</li>';
+		} else if ( is_archive() && !is_tax() && !is_category() && !is_tag() ) {
 			echo '<li class="inline-block text-gray-700 dark:text-gray-300">' . post_type_archive_title('', false) . '</li>';
 		} else if ( is_archive() && is_tax() ) {
 			// Try to get post type from the first post in the query
@@ -230,9 +233,6 @@ function sid_truyen_breadcrumbs() {
 		} else if ( get_query_var('paged') ) {
 			// Paginated archives
 			echo '<li class="inline-block text-gray-700 dark:text-gray-300">'.__('Trang', 'sid-truyen') . ' ' . get_query_var('paged') . '</li>';
-		} else if ( is_search() ) {
-			// Search results
-			echo '<li class="inline-block text-gray-700 dark:text-gray-300">Kết quả tìm kiếm cho: ' . get_search_query() . '</li>';
 		}
 		
 		echo '</ul>';

@@ -7,16 +7,22 @@
         
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                <?php printf( __( 'Kết quả tìm kiếm: %s', 'sid-truyen' ), '<span class="text-primary">' . get_search_query() . '</span>' ); ?>
+                <?php 
+                if ( get_search_query() ) {
+                    printf( __( 'Kết quả tìm kiếm: %s', 'sid-truyen' ), '<span class="text-primary">' . get_search_query() . '</span>' ); 
+                } else {
+                    _e( 'Tìm kiếm', 'sid-truyen' );
+                }
+                ?>
             </h1>
-            <?php if ( have_posts() ) : ?>
+            <?php if ( have_posts() && get_search_query() ) : ?>
                 <p class="text-gray-600 dark:text-gray-400">
                     <?php printf( __( 'Tìm thấy %s truyện', 'sid-truyen' ), $wp_query->found_posts ); ?>
                 </p>
             <?php endif; ?>
         </div>
 
-        <?php if ( have_posts() ) : ?>
+        <?php if ( have_posts() && get_search_query() ) : ?>
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <?php while ( have_posts() ) : the_post(); ?>
                     <a href="<?php the_permalink(); ?>" class="group">
@@ -62,9 +68,19 @@
 
         <?php else : ?>
             <div class="bg-white dark:bg-dark-surface rounded-lg shadow-sm p-12 text-center">
-                <svg class="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">Không tìm thấy truyện</h2>
-                <p class="text-gray-500 dark:text-gray-400 mb-6">Thử lại với từ khóa khác hoặc <a href="<?php echo home_url(); ?>" class="text-primary hover:underline">quay về trang chủ</a></p>
+                <svg class="w-20 h-20 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <h2 class="text-2xl font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    <?php echo get_search_query() ? 'Không tìm thấy truyện' : 'Vui lòng nhập từ khóa'; ?>
+                </h2>
+                <p class="text-gray-500 dark:text-gray-400 mb-6">
+                    <?php echo get_search_query() ? 'Thử lại với từ khóa khác hoặc quay về trang chủ.' : 'Bạn cần nhập tên truyện hoặc tác giả để tìm kiếm.'; ?>
+                </p>
+                
+                <!-- Search Form Inline -->
+                <form action="<?php echo home_url('/'); ?>" method="get" class="max-w-md mx-auto flex gap-2">
+                    <input type="text" name="s" value="<?php echo get_search_query(); ?>" placeholder="Nhập tên truyện..." class="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-white focus:outline-none focus:border-primary">
+                    <button type="submit" class="px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary/90 transition-colors">Tìm</button>
+                </form>
             </div>
         <?php endif; ?>
 
