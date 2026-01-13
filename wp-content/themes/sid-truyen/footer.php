@@ -82,7 +82,7 @@
 				<p class="mb-4 md:mb-0 text-center md:text-left">
 					&copy; <?php echo date( 'Y' ); ?> <span class="text-gray-900 dark:text-gray-300 font-semibold"><?php bloginfo( 'name' ); ?></span>. 
 					<span class="hidden md:inline mx-2">|</span> 
-					Thiết kế bởi <span class="text-primary">Sid Truyện Team</span>.
+					Thiết kế bởi <span class="text-primary">Sid Truyện Team</span>. Version <?php $theme_version = wp_get_theme()->get( 'Version' ); echo $theme_version; ?>
 				</p>
 			</div>
 		</div>
