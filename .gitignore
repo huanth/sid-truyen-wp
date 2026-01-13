@@ -14,22 +14,28 @@ wp-config-local.php
 .htaccess
 nginx.conf
 
-# Content - Uploads & Cache
-/wp-content/uploads/
-/wp-content/cache/
-/wp-content/upgrade/
-/wp-content/backups/
-/wp-content/backup-db/
-/wp-content/advanced-cache.php
-/wp-content/object-cache.php
-/wp-content/wp-cache-config.php
+# Content - Whitelist Strategy
+# Ignore everything in wp-content
+/wp-content/*
 
-# Content - Plugins (Optional: Uncomment to ignore installed plugins)
-# /wp-content/plugins/
+# Allow Themes
+!/wp-content/themes/
 
-# Content - Themes (Ignore standard themes, keep custom)
+# Allow Plugins
+!/wp-content/plugins/
+
+# Allow index.php
+!/wp-content/index.php
+
+# Specific ignores within allowed folders
 /wp-content/themes/twent*/
 /wp-content/themes/classic/
+/wp-content/plugins/w3-total-cache/
+/wp-content/updraft/
+*.zip
+*.tar.gz
+*.sql
+*.bak
 
 # Application Dependencies
 node_modules/
