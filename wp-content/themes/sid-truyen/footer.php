@@ -46,11 +46,10 @@
                 <div>
                     <h3 class="text-gray-900 dark:text-white font-bold uppercase tracking-wider text-sm mb-6 border-l-4 border-primary pl-3 px-2">Thông tin</h3>
                     <ul class="space-y-3 text-sm">
-                        <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Giới thiệu</a></li>
-                        <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Liên hệ</a></li>
-                        <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Điều khoản sử dụng</a></li>
-                        <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Chính sách bảo mật</a></li>
-                        <li><a href="#" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Bản quyền (DMCA)</a></li>
+                        <li><a href="<?php echo home_url('/gioi-thieu'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Giới thiệu</a></li>
+                        <li><a href="<?php echo home_url('/lien-he'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Liên hệ</a></li>
+                        <li><a href="<?php echo home_url('/dieu-khoan-su-dung'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Điều khoản sử dụng</a></li>
+                        <li><a href="<?php echo home_url('/chinh-sach-bao-mat'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Chính sách bảo mật</a></li>
                     </ul>
                 </div>
 
