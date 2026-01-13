@@ -799,7 +799,14 @@ function sid_truyen_seo_meta_tags() {
         }
     }
 
-    // 4. Archives / Taxonomies (Genre, etc.)
+    // 4. Search Results
+    elseif ( is_search() ) {
+        $title = 'Kết quả tìm kiếm: ' . get_search_query();
+        $description = 'Kết quả tìm kiếm cho từ khóa "' . get_search_query() . '" tại ' . $site_name;
+        $url = home_url( '?s=' . get_search_query() );
+    }
+
+    // 5. Archives / Taxonomies (Genre, etc.)
     elseif ( is_archive() ) {
         $title = get_the_archive_title();
         $url = get_term_link( get_queried_object() );
