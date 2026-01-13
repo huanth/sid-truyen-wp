@@ -832,3 +832,85 @@ function sid_truyen_seo_meta_tags() {
     echo "<!-- End SEO Meta Tags -->\n\n";
 }
 add_action( 'wp_head', 'sid_truyen_seo_meta_tags', 5 );
+/**
+ * Ebook Download Feature (TXT Format)
+ * Handles requests for downloading novels and chapters as .txt files.
+ */
+function sid_truyen_handle_ebook_download() {
+    if ( isset( $_GET['ebook_download'] ) && isset( $_GET['post_id'] ) ) {
+        $post_id = intval( $_GET['post_id'] );
+        $post_type = get_post_type( $post_id );
+        
+        if ( ! $post_id || ! in_array( $post_type, ['novel', 'chapter'] ) ) {
+            return;
+        }
+
+        // Set Headers for Download
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Content-Description: File Transfer');
+        header('Content-Disposition: attachment; filename="' . get_the_title($post_id) . '.txt"');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate');
+        header('Pragma: public');
+
+        // Output BOM for Excel/Windows compatibility with UTF-8
+        echo "\xEF\xBB\xBF";
+
+        // 1. Single Chapter Download
+        if ( $post_type === 'chapter' ) {
+            $parent_id = get_post_meta( $post_id, '_sid_chapter_parent_novel', true );
+            $parent_title = $parent_id ? get_the_title( $parent_id ) : '';
+            
+            echo "Truyện: " . $parent_title . "\n";
+            echo get_the_title( $post_id ) . "\n";
+            echo "Nguồn: " . home_url() . "\n";
+			echo "Link chương: " . get_permalink($post_id) . "\n";
+            echo str_repeat("-", 50) . "\n\n";
+            
+            echo wp_strip_all_tags( get_post_field( 'post_content', $post_id ) );
+        }
+
+        // 2. Full Novel Download
+        elseif ( $post_type === 'novel' ) {
+            $novel_title = get_the_title( $post_id );
+            $author = get_post_meta( $post_id, '_sid_novel_author', true );
+            
+            echo "Tên truyện: " . $novel_title . "\n";
+            echo "Tác giả: " . ( $author ? $author : 'Đang cập nhật' ) . "\n";
+            echo "Nguồn: " . home_url() . "\n";
+			echo "Link truyện: " . get_permalink($post_id) . "\n";
+            echo str_repeat("=", 50) . "\n\n";
+            
+            echo "GIỚI THIỆU:\n";
+            echo wp_strip_all_tags( get_post_field( 'post_content', $post_id ) ) . "\n\n";
+            echo str_repeat("=", 50) . "\n\n";
+
+            // Query All Chapters
+            $chapters = get_posts(array(
+                'post_type' => 'chapter',
+                'meta_key' => '_sid_chapter_parent_novel',
+                'meta_value' => $post_id,
+                'posts_per_page' => -1,
+                'orderby' => 'date',
+                'order' => 'ASC' // Oldest to Newest
+            ));
+
+            if ( $chapters ) {
+                foreach ( $chapters as $chapter ) {
+                    echo "--- " . get_the_title( $chapter->ID ) . " ---\n\n";
+                    echo wp_strip_all_tags( $chapter->post_content ) . "\n\n";
+                    echo str_repeat("_", 30) . "\n\n";
+                    
+                    // Prevent timeout / memory issues for large novels
+                    if ( ob_get_level() > 0 ) ob_flush();
+                    flush();
+                }
+            } else {
+                echo "Truyện này chưa có chương nào.";
+            }
+        }
+
+        exit;
+    }
+}
+add_action( 'init', 'sid_truyen_handle_ebook_download' );

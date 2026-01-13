@@ -64,16 +64,48 @@
                             </a>
                         <?php endforeach; ?>
                     </div>
+
                     <?php endif; ?>
 
-                    <div class="text-sm text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                        <?php the_content(); ?>
+                    <!-- Ebook Download Button -->
+                    <div class="mb-6 group">
+                        <a href="<?php echo add_query_arg(['ebook_download' => '1', 'post_id' => get_the_ID()], home_url()); ?>" class="relative flex items-center justify-between w-full p-4 bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900 text-white rounded-xl shadow-lg border border-gray-700 hover:border-emerald-500 hover:shadow-emerald-500/20 transition-all duration-300 group-hover:-translate-y-1 overflow-hidden">
+                            <!-- Background Glow -->
+                            <div class="absolute inset-0 bg-emerald-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                            
+                            <div class="z-10 flex flex-col items-start">
+                                <span class="text-xs text-emerald-400 font-bold uppercase tracking-wider mb-1">Ebook Full</span>
+                                <span class="font-bold text-lg leading-none">Tải Xuống Ngay</span>
+                            </div>
+                            
+                            <div class="z-10 w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/40 group-hover:scale-110 transition-transform duration-300">
+                                <svg class="w-5 h-5 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            </div>
+                        </a>
+                        <div class="mt-2 flex items-center justify-center text-[10px] text-gray-500 dark:text-gray-400 space-x-2">
+                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Định dạng .txt</span>
+                            <span class="flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Cập nhật 24/7</span>
+                        </div>
                     </div>
+
+
                 </div>
             </aside>
 
-            <!-- Chapter List (Main Content) -->
-            <div class="lg:col-span-3">
+            <!-- Main Content -->
+            <div class="lg:col-span-3 space-y-8">
+                
+                <!-- Description Section -->
+                <div class="bg-white dark:bg-dark-surface p-6 rounded-lg shadow-sm">
+                   <h2 class="text-xl font-bold mb-4 border-b border-gray-200 dark:border-gray-700 pb-2 text-gray-800 dark:text-gray-100">
+                        Giới Thiệu
+                    </h2>
+                    <div class="text-gray-600 dark:text-gray-300 leading-relaxed space-y-4 font-reading">
+                        <?php the_content(); ?>
+                    </div>
+                </div>
+
+                <!-- Chapter List Section -->
                 <div class="bg-white dark:bg-dark-surface p-6 rounded-lg shadow-sm">
                     <h2 class="text-xl font-bold mb-6 border-b border-gray-200 dark:border-gray-700 pb-2 text-gray-800 dark:text-gray-100">
                         Danh Sách Chương
