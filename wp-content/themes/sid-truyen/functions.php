@@ -814,6 +814,7 @@ function sid_truyen_seo_meta_tags() {
     echo "\n<!-- SEO & Social Meta Tags -->\n";
     
     // Open Graph
+    echo '<meta name="description" content="' . $description . '" />' . "\n";
     echo '<meta property="og:site_name" content="' . $site_name . '" />' . "\n";
     echo '<meta property="og:type" content="' . $type . '" />' . "\n";
     echo '<meta property="og:title" content="' . $title . '" />' . "\n";
