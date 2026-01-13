@@ -746,7 +746,13 @@ function sid_truyen_seo_meta_tags() {
 
     // 1. Homepage
     if ( is_front_page() || is_home() ) {
-        $title = $site_name . ' - ' . get_bloginfo('description');
+        $title = $site_name . ' - Đọc Truyện Chữ Online';
+        $desc = get_bloginfo('description');
+        if ( ! $desc || $desc == 'Just another WordPress site' ) {
+            $description = "Kho truyện chữ hàng đầu với hàng ngàn đầu truyện hấp dẫn đa dạng thể loại (Tiên Hiệp, Kiếm Hiệp, Ngôn Tình). Cập nhật liên tục, giao diện thân thiện, đọc truyện miễn phí.";
+        } else {
+            $description = $desc;
+        }
     }
 
     // 2. Single Novel

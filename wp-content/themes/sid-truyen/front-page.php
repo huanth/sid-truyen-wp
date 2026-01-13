@@ -25,7 +25,7 @@
                     <a href="<?php the_permalink(); ?>" class="group">
                         <div class="aspect-[2/3] bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden relative shadow-sm group-hover:shadow-lg transition-all duration-300">
                              <?php if(has_post_thumbnail()): ?>
-                                <?php the_post_thumbnail('medium', ['class' => 'w-full h-full object-cover']); ?>
+                                <?php the_post_thumbnail('medium', ['class' => 'w-full h-full object-cover', 'alt' => get_the_title()]); ?>
                              <?php else: ?>
                                 <div class="absolute inset-0 flex items-center justify-center text-gray-400 dark:text-gray-500 font-bold text-4xl select-none">
                                     <?php echo substr(get_the_title(), 0, 1); ?>
