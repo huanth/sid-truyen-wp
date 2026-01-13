@@ -1,85 +1,51 @@
-# WordPress Core
+# WordPress Core (Ignore core files to keep repo light)
 /wp-admin/
 /wp-includes/
 /wp-*.php
-/xmlrpc.php
-/readme.html
+/index.php
 /license.txt
+/readme.html
+/xmlrpc.php
 
-# WordPress Config
+# Configuration
 wp-config.php
+wp-config-sample.php
 wp-config-local.php
+.htaccess
+nginx.conf
 
-# Uploads
+# Content - Uploads & Cache
 /wp-content/uploads/
+/wp-content/cache/
+/wp-content/upgrade/
+/wp-content/backups/
+/wp-content/backup-db/
+/wp-content/advanced-cache.php
+/wp-content/object-cache.php
+/wp-content/wp-cache-config.php
 
-# Plugins (uncomment to ignore all plugins)
+# Content - Plugins (Optional: Uncomment to ignore installed plugins)
 # /wp-content/plugins/
 
-# Themes (uncomment to ignore all themes except your custom theme)
-# /wp-content/themes/*/
-# !/wp-content/themes/equinox/
+# Content - Themes (Ignore standard themes, keep custom)
+/wp-content/themes/twent*/
+/wp-content/themes/classic/
 
-# Cache & Temporary Files
-/wp-content/cache/
-/wp-content/backup-db/
-/wp-content/backups/
-/wp-content/upgrade/
-/wp-content/advanced-cache.php
-/wp-content/wp-cache-config.php
-*.cache
-.cache/
-/cache/
-*-cache/
-*.cached
-/wp-content/object-cache.php
-/wp-content/db.php
-/.htaccess.bak
-/sitemap.xml
-/sitemap.xml.gz
-
-# iThemes Security
-/wp-admin/install.php
-/nginx.conf
-
-# UpdraftPlus
-/wp-content/updraft/
-
-# WP Rocket
-/wp-content/wp-rocket-config/
-
-# Log Files
-*.log
-error_log
-debug.log
+# Application Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+/vendor/
 
 # System Files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-*~
+ehthumbs.db
 
-# IDE & Editor Files
+# IDE / Editor
 .idea/
 .vscode/
 *.swp
 *.swo
 *.sublime-project
 *.sublime-workspace
-
-# Node & Dependencies
-node_modules/
-npm-debug.log
-yarn-error.log
-
-# Composer
-/vendor/
-
-# Environment Files
-.env
-.env.local
-.env.*.local
