@@ -31,7 +31,7 @@ nginx.conf
 /wp-content/themes/twent*/
 /wp-content/themes/classic/
 /wp-content/plugins/w3-total-cache/
-/wp-content/updraft/
+/wp-content/updraft/*
 *.zip
 *.tar.gz
 *.sql
