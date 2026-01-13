@@ -1,0 +1,13 @@
+{
+  "name": "sid-truyen-theme",
+  "version": "1.0.0",
+  "description": "WordPress theme for reading stories",
+  "scripts": {
+    "build": "tailwindcss -i ./src/input.css -o ./assets/css/output.css --minify",
+    "watch": "tailwindcss -i ./src/input.css -o ./assets/css/output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1",
+    "@tailwindcss/typography": "^0.5.10"
+  }
+}
