@@ -4,7 +4,7 @@
     <div class="container mx-auto px-4 max-w-4xl">
         
         <?php if ( have_posts() ) : while ( have_posts() ) : the_post(); ?>
-            <article id="post-<?php the_ID(); ?>" class="bg-white dark:bg-dark-surface p-8 md:p-12 rounded-xl shadow-sm">
+            <article id="post-<?php the_ID(); ?>" class="p-8 md:p-12">
                 
                 <header class="mb-8 border-b border-gray-100 dark:border-gray-700 pb-6">
                     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100 font-reading">
