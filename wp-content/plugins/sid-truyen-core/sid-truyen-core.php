@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name: Sid Truyen Core
- * Plugin URI: https://example.com
+ * Plugin URI: https://sidtruyen.com
  * Description: Core functionality for Sid Truyen theme. Manages Novels, Chapters, and Genres.
- * Version: 1.0.0
- * Author: Antigravity
- * Author URI: https://google.com
+ * Version: 1.1.0
+ * Author: Nauhyuh
+ * Author URI: https://sidtruyen.com
  * Text Domain: sid-truyen-core
  * License: GPL2
  */
