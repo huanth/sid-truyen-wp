@@ -806,7 +806,14 @@ function sid_truyen_seo_meta_tags() {
         $url = home_url( '?s=' . get_search_query() );
     }
 
-    // 5. Archives / Taxonomies (Genre, etc.)
+    // 5. Post Type Archives
+    elseif ( is_post_type_archive() ) {
+        $title = post_type_archive_title('', false);
+        $url = get_post_type_archive_link( get_query_var('post_type') );
+        $description = 'Danh sách ' . $title . ' mới nhất tại ' . $site_name;
+    }
+
+    // 6. Taxonomies (Genre, Category, etc.)
     elseif ( is_archive() ) {
         $title = get_the_archive_title();
         $url = get_term_link( get_queried_object() );
