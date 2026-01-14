@@ -656,6 +656,13 @@ function sid_truyen_pre_get_document_title( $title ) {
         } else {
             return 'Tất cả truyện - ' . get_bloginfo( 'name' );
         }
+
+        if ( is_paged() ) {
+            // WordPress automatically adds page number to title usually, but let's be safe if it doesn't
+            // actually, pre_get_document_title often replaces the whole thing.
+            // Let's rely on WP default behavior for paged titles unless we need strictly custom format
+            // Just returning the base string is usually better, WP appends "Page X"
+        }
     }
     if ( is_tax( 'genre' ) ) {
         $term = get_queried_object();
@@ -785,7 +792,7 @@ function sid_truyen_seo_meta_tags() {
     $site_name = get_bloginfo('name');
     $title = get_bloginfo('name');
     $description = get_bloginfo('description');
-    $image = get_template_directory_uri() . '/assets/images/favicon.png'; // Default fallback
+    $image = get_template_directory_uri() . '/assets/images/logo.png'; // Default fallback
     $url = home_url();
     $type = 'website';
 
@@ -798,6 +805,7 @@ function sid_truyen_seo_meta_tags() {
         } else {
             $description = $desc;
         }
+        $url = home_url();
     }
 
     // 2. Single Novel
@@ -848,28 +856,28 @@ function sid_truyen_seo_meta_tags() {
         $url = home_url( '?s=' . get_search_query() );
     }
 
-    // 5. Post Type Archives
-    elseif ( is_post_type_archive() ) {
+    // 5. Post Type Archives & Custom Pages
+    elseif ( is_post_type_archive( 'novel' ) ) {
         $title = post_type_archive_title('', false);
-        $url = get_post_type_archive_link( get_query_var('post_type') );
+        $url = get_post_type_archive_link( 'novel' );
+        $description = 'Danh sách truyện mới nhất, cập nhật liên tục tại ' . $site_name;
         
-        // Custom Canonical URLs for Hot & Completed Pages
+        // Custom Canonical URLs and Meta for Hot & Completed Pages
         if ( get_query_var( 'v_sort' ) === 'views' ) {
             $url = home_url( '/truyen-hot/' );
-            $title = 'Truyện Hot - ' . $site_name;
-            $description = 'Danh sách truyện hot, được xem nhiều nhất tại ' . $site_name;
+            $title = 'Truyện Hot';
+            $description = 'Danh sách truyện hot, truyện xem nhiều nhất, được yêu thích nhất tháng tại ' . $site_name;
         } elseif ( get_query_var( 'v_status' ) === 'completed' ) {
             $url = home_url( '/truyen-hoan-thanh/' );
-            $title = 'Truyện đã hoàn thành - ' . $site_name;
-            $description = 'Danh sách truyện đã hoàn thành (Full) tại ' . $site_name;
+            $title = 'Truyện đã hoàn thành';
+            $description = 'Danh sách truyện đã hoàn thành (Full), truyện ngôn tình, tiên hiệp đã ra đủ chương tại ' . $site_name;
         }
 
         if ( is_paged() ) {
-            $url = user_trailingslashit( trailingslashit( $url ) . 'page/' . get_query_var( 'paged' ) );
-        }
-
-        if ( ! isset( $description ) ) {
-            $description = 'Danh sách ' . $title . ' mới nhất tại ' . $site_name;
+            $paged = get_query_var( 'paged' );
+            $url = user_trailingslashit( trailingslashit( $url ) . 'page/' . $paged );
+            $title .= ' - Trang ' . $paged;
+            $description .= ' - Trang ' . $paged;
         }
     }
 
