@@ -10,9 +10,9 @@
             <h1 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
                 <?php
                 $page_title = 'Tất cả truyện';
-                if ( isset( $_GET['v_sort'] ) && $_GET['v_sort'] === 'views' ) {
+                if ( get_query_var( 'v_sort' ) === 'views' ) {
                     $page_title = 'Truyện Hot 🔥';
-                } elseif ( isset( $_GET['v_status'] ) && $_GET['v_status'] === 'completed' ) {
+                } elseif ( get_query_var( 'v_status' ) === 'completed' ) {
                     $page_title = 'Truyện đã hoàn thành';
                 }
                 echo esc_html( $page_title );
@@ -55,8 +55,8 @@
                     <!-- Status Filter -->
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-semibold uppercase text-gray-400 hidden sm:inline-block">Trạng thái:</span>
-                        <a href="<?php echo esc_url(remove_query_arg(['v_status', 'paged'])); ?>" class="<?php echo !isset($_GET['v_status']) ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'; ?> px-3 py-1.5 rounded text-xs font-medium transition-all">Tất cả</a>
-                        <a href="<?php echo esc_url(add_query_arg('v_status', 'completed')); ?>" class="<?php echo (isset($_GET['v_status']) && $_GET['v_status'] === 'completed') ? 'bg-green-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'; ?> px-3 py-1.5 rounded text-xs font-medium transition-all">Đã hoàn thành</a>
+                        <a href="<?php echo esc_url( get_post_type_archive_link( 'novel' ) ); ?>" class="<?php echo ( ! get_query_var('v_status') ) ? 'bg-primary text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'; ?> px-3 py-1.5 rounded text-xs font-medium transition-all">Tất cả</a>
+                        <a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="<?php echo ( get_query_var('v_status') === 'completed' ) ? 'bg-green-500 text-white shadow-md' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'; ?> px-3 py-1.5 rounded text-xs font-medium transition-all">Đã hoàn thành</a>
                     </div>
 
                     <div class="w-px h-4 bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
@@ -64,8 +64,8 @@
                     <!-- Sort Filter -->
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-semibold uppercase text-gray-400 hidden sm:inline-block">Sắp xếp:</span>
-                        <a href="<?php echo esc_url(remove_query_arg(['v_sort', 'paged'])); ?>" class="<?php echo !isset($_GET['v_sort']) ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 hover:text-primary'; ?> text-sm transition-colors">Mới nhất</a>
-                        <a href="<?php echo esc_url(add_query_arg('v_sort', 'views')); ?>" class="<?php echo (isset($_GET['v_sort']) && $_GET['v_sort'] === 'views') ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 hover:text-primary'; ?> text-sm transition-colors">Xem nhiều</a>
+                        <a href="<?php echo esc_url( get_post_type_archive_link( 'novel' ) ); ?>" class="<?php echo ( ! get_query_var('v_sort') ) ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 hover:text-primary'; ?> text-sm transition-colors">Mới nhất</a>
+                        <a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="<?php echo ( get_query_var('v_sort') === 'views' ) ? 'text-primary font-bold' : 'text-gray-600 dark:text-gray-400 hover:text-primary'; ?> text-sm transition-colors">Xem nhiều</a>
                     </div>
                 </div>
             </div>

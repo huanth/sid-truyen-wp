@@ -601,6 +601,46 @@ add_action( 'admin_bar_menu', 'sid_truyen_add_stats_to_admin_bar', 100 );
  * Customize Document Title for Filtered Archive Pages
  */
 /**
+ * Register custom query variables
+ */
+function sid_truyen_register_query_vars( $vars ) {
+    $vars[] = 'v_sort';
+    $vars[] = 'v_status';
+    return $vars;
+}
+add_filter( 'query_vars', 'sid_truyen_register_query_vars' );
+
+/**
+ * Add custom rewrite rules for Hot and Completed/Full stories
+ */
+function sid_truyen_add_rewrite_rules() {
+    // Hot Stories (Truyện Hot)
+    add_rewrite_rule(
+        'truyen-hot/page/([0-9]+)/?$',
+        'index.php?post_type=novel&v_sort=views&paged=$matches[1]',
+        'top'
+    );
+    add_rewrite_rule(
+        'truyen-hot/?$',
+        'index.php?post_type=novel&v_sort=views',
+        'top'
+    );
+
+    // Completed Stories (Truyện Full/Hoàn Thành)
+    add_rewrite_rule(
+        'truyen-hoan-thanh/page/([0-9]+)/?$',
+        'index.php?post_type=novel&v_status=completed&paged=$matches[1]',
+        'top'
+    );
+    add_rewrite_rule(
+        'truyen-hoan-thanh/?$',
+        'index.php?post_type=novel&v_status=completed',
+        'top'
+    );
+}
+add_action( 'init', 'sid_truyen_add_rewrite_rules' );
+
+/**
  * Customize Global Document Title for Filtered Archive Pages
  */
 // Customize Global Document Title for Filtered Archive Pages
@@ -609,9 +649,9 @@ function sid_truyen_pre_get_document_title( $title ) {
         return 'Truyện Hay - Đọc truyện online miễn phí, cập nhật liên tục';
     }
     if ( is_post_type_archive( 'novel' ) ) {
-        if ( isset( $_GET['v_sort'] ) && $_GET['v_sort'] === 'views' ) {
+        if ( get_query_var( 'v_sort' ) === 'views' ) {
             return 'Truyện Hot - ' . get_bloginfo( 'name' );
-        } elseif ( isset( $_GET['v_status'] ) && $_GET['v_status'] === 'completed' ) {
+        } elseif ( get_query_var( 'v_status' ) === 'completed' ) {
             return 'Truyện đã hoàn thành - ' . get_bloginfo( 'name' );
         } else {
             return 'Tất cả truyện - ' . get_bloginfo( 'name' );
@@ -672,7 +712,9 @@ add_filter( 'posts_search', 'sid_truyen_search_by_title_only', 10, 2 );
 function sid_truyen_disable_novel_redirect( $redirect_url ) {
     // Check if we are potentially on a novel pagination URL
     // Pattern: /truyen/something/page/number
-    if ( preg_match( '#/truyen/[^/]+/page/\d+#', $_SERVER['REQUEST_URI'] ) ) {
+    // Also include new rules for truyen-hot and truyen-hoan-thanh
+    if ( preg_match( '#/truyen(-hot|-hoan-thanh)?/[^/]+/page/\d+#', $_SERVER['REQUEST_URI'] ) 
+         || preg_match( '#/truyen-(hot|hoan-thanh)/page/\d+#', $_SERVER['REQUEST_URI'] ) ) {
         return false;
     }
     return $redirect_url;
@@ -711,13 +753,13 @@ function sid_truyen_modify_archive_query( $query ) {
         $query->set( 'posts_per_page', 36 );
 
         // Handle Sort by Views
-        if ( isset( $_GET['v_sort'] ) && $_GET['v_sort'] === 'views' ) {
+        if ( $query->get( 'v_sort' ) === 'views' ) {
             $query->set( 'meta_key', '_sid_novel_views' );
             $query->set( 'orderby', 'meta_value_num' );
         }
 
         // Handle Filter by Status
-        if ( isset( $_GET['v_status'] ) && $_GET['v_status'] === 'completed' ) {
+        if ( $query->get( 'v_status' ) === 'completed' ) {
             $meta_query = $query->get('meta_query');
             if( !is_array($meta_query) ) {
                 $meta_query = array();
@@ -810,7 +852,25 @@ function sid_truyen_seo_meta_tags() {
     elseif ( is_post_type_archive() ) {
         $title = post_type_archive_title('', false);
         $url = get_post_type_archive_link( get_query_var('post_type') );
-        $description = 'Danh sách ' . $title . ' mới nhất tại ' . $site_name;
+        
+        // Custom Canonical URLs for Hot & Completed Pages
+        if ( get_query_var( 'v_sort' ) === 'views' ) {
+            $url = home_url( '/truyen-hot/' );
+            $title = 'Truyện Hot - ' . $site_name;
+            $description = 'Danh sách truyện hot, được xem nhiều nhất tại ' . $site_name;
+        } elseif ( get_query_var( 'v_status' ) === 'completed' ) {
+            $url = home_url( '/truyen-hoan-thanh/' );
+            $title = 'Truyện đã hoàn thành - ' . $site_name;
+            $description = 'Danh sách truyện đã hoàn thành (Full) tại ' . $site_name;
+        }
+
+        if ( is_paged() ) {
+            $url = user_trailingslashit( trailingslashit( $url ) . 'page/' . get_query_var( 'paged' ) );
+        }
+
+        if ( ! isset( $description ) ) {
+            $description = 'Danh sách ' . $title . ' mới nhất tại ' . $site_name;
+        }
     }
 
     // 6. Taxonomies (Genre, Category, etc.)

@@ -36,9 +36,9 @@
                     <ul class="space-y-3 text-sm">
                         <li><a href="<?php echo home_url('/'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Trang chủ</a></li>
                         <li><a href="<?php echo get_post_type_archive_link('novel'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Danh sách truyện</a></li>
-                        <li><a href="<?php echo add_query_arg('v_sort', 'views', get_post_type_archive_link('novel')); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Truyện Hot 🔥</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Truyện Hot 🔥</a></li>
                         <li><a href="<?php echo get_post_type_archive_link('novel'); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Mới cập nhật</a></li>
-                        <li><a href="<?php echo add_query_arg('v_status', 'completed', get_post_type_archive_link('novel')); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Truyện Full</a></li>
+                        <li><a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors block">Truyện Full</a></li>
                     </ul>
                 </div>
 

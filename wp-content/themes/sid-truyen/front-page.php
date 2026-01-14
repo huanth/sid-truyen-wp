@@ -182,7 +182,7 @@
         <div class="container mx-auto px-4">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold border-l-4 border-success pl-4 text-gray-800 dark:text-gray-100">Truyện Đã Hoàn Thành</h2>
-                 <a href="<?php echo add_query_arg('v_status', 'completed', get_post_type_archive_link('novel')); ?>" class="text-sm text-primary hover:underline">Xem tất cả</a>
+                <a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="text-sm text-primary hover:underline">Xem tất cả</a>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
