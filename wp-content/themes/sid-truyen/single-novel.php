@@ -111,7 +111,75 @@
                         Danh Sách Chương
                     </h2>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-2">
+                    <!-- Enhanced Chapter Search Input -->
+                    <div class="mb-6">
+                        <div class="relative group">
+                            <!-- Search Icon -->
+                            <div class="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                                <svg id="search-icon" class="w-5 h-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <!-- Loading Spinner (hidden by default) -->
+                                <svg id="loading-spinner" class="hidden w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            
+                            <!-- Input Field -->
+                            <input 
+                                type="text" 
+                                id="chapter-search" 
+                                placeholder="Tìm chương nhanh (nhập số chương hoặc tên)..." 
+                                class="w-full pl-12 pr-12 py-4 text-sm border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-all duration-300 focus:ring-4 focus:ring-primary/20 focus:shadow-lg"
+                                data-novel-id="<?php echo get_the_ID(); ?>"
+                            />
+                            
+                            <!-- Clear Button -->
+                            <button 
+                                id="clear-search" 
+                                class="hidden absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                                aria-label="Clear search"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Gradient Border Effect -->
+                            <div class="absolute inset-0 rounded-xl bg-gradient-to-r from-primary via-purple-500 to-pink-500 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm"></div>
+                        </div>
+                        
+                        <!-- Search Results Count -->
+                        <div id="search-results-count" class="hidden mt-2 text-sm text-gray-500 dark:text-gray-400"></div>
+                    </div>
+
+                    <div id="chapter-list">
+                        <style>
+                            #chapter-list {
+                                display: block; /* Changed from grid */
+                            }
+                            @media (min-width: 768px) {
+                                #chapter-list {
+                                    column-count: 2;
+                                    column-gap: 1rem;
+                                }
+                                #chapter-list .chapter-item {
+                                    break-inside: avoid;
+                                    margin-bottom: 0.5rem;
+                                }
+                                /* Force pagination to span across all columns */
+                                #pagination-container {
+                                    column-span: all;
+                                    margin-top: 1.5rem;
+                                }
+                            }
+                            @media (max-width: 767px) {
+                                #chapter-list .chapter-item {
+                                    margin-bottom: 0.5rem;
+                                }
+                            }
+                        </style>
 <?php
                         $novel_id = get_the_ID();
                         // Prioritize 'chapters_page' query parameter for robust pagination
@@ -143,7 +211,7 @@
                                 $time_diff = $current_time - $post_time;
                                 $is_new = ($time_diff < 86400); // 86400 seconds = 24 hours
                                 ?>
-                                <a href="<?php the_permalink(); ?>" class="text-sm text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded transition-colors block group">
+                                <a href="<?php the_permalink(); ?>" class="chapter-item text-sm text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded transition-colors block group">
                                     <span class="flex items-center gap-2">
                                         <span class="truncate"><?php the_title(); ?></span>
                                         <?php if ($is_new) : ?>
@@ -157,7 +225,7 @@
                             // Pagination
                             if ($chapter_query->max_num_pages > 1) :
                                 ?>
-                                <div class="col-span-full mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <div class="col-span-full mt-6 pt-4 border-t border-gray-200 dark:border-gray-700" id="pagination-container">
                                     <div class="flex justify-center items-center space-x-2">
                                         <?php
                                         $pagination = paginate_links(array(
@@ -200,5 +268,153 @@
         </div>
     </div>
 </main>
+
+<script>
+(function() {
+    const searchInput = document.getElementById('chapter-search');
+    const chapterList = document.getElementById('chapter-list');
+    const clearButton = document.getElementById('clear-search');
+    const searchIcon = document.getElementById('search-icon');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const resultsCount = document.getElementById('search-results-count');
+    const paginationContainer = document.getElementById('pagination-container');
+    
+    if (!searchInput || !chapterList) return;
+    
+    // Store original chapters for restoration
+    const originalChapters = chapterList.innerHTML;
+    let searchTimeout;
+    
+    // Show/hide clear button
+    searchInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+            clearButton.classList.remove('hidden');
+        } else {
+            clearButton.classList.add('hidden');
+            // Restore original chapters when input is empty
+            restoreOriginalChapters();
+        }
+        
+        // Debounced AJAX search
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => performSearch(this.value.trim()), 300);
+    });
+    
+    // Clear button functionality
+    clearButton.addEventListener('click', function() {
+        searchInput.value = '';
+        clearButton.classList.add('hidden');
+        restoreOriginalChapters();
+        searchInput.focus();
+    });
+    
+    function performSearch(searchTerm) {
+        if (searchTerm.length === 0) {
+            return;
+        }
+        
+        // Show loading state
+        showLoading(true);
+        
+        // AJAX request
+        const formData = new FormData();
+        formData.append('action', 'search_chapters');
+        formData.append('search_term', searchTerm);
+        formData.append('novel_id', searchInput.dataset.novelId);
+        formData.append('nonce', '<?php echo wp_create_nonce("chapter_search_nonce"); ?>');
+        
+        fetch('<?php echo admin_url("admin-ajax.php"); ?>', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            showLoading(false);
+            
+            if (data.success && data.data.chapters) {
+                displaySearchResults(data.data.chapters);
+            } else {
+                displayNoResults();
+            }
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            showLoading(false);
+            displayNoResults();
+        });
+    }
+    
+    function showLoading(isLoading) {
+        if (isLoading) {
+            searchIcon.classList.add('hidden');
+            loadingSpinner.classList.remove('hidden');
+        } else {
+            searchIcon.classList.remove('hidden');
+            loadingSpinner.classList.add('hidden');
+        }
+    }
+    
+    function displaySearchResults(chapters) {
+        // Hide pagination during search
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
+        
+        // Show results count
+        resultsCount.classList.remove('hidden');
+        resultsCount.textContent = `Tìm thấy ${chapters.length} chương`;
+        
+        // Clear and display results
+        chapterList.innerHTML = '';
+        
+        if (chapters.length > 0) {
+            chapters.forEach(chapter => {
+                const chapterLink = document.createElement('a');
+                chapterLink.href = chapter.permalink;
+                chapterLink.className = 'chapter-item text-sm text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 p-2 rounded transition-colors block group';
+                
+                const span = document.createElement('span');
+                span.className = 'flex items-center gap-2';
+                
+                const title = document.createElement('span');
+                title.className = 'truncate';
+                title.textContent = chapter.title;
+                span.appendChild(title);
+                
+                // Add NEW badge if applicable
+                if (chapter.is_new) {
+                    const badge = document.createElement('span');
+                    badge.style.cssText = 'padding: 0.125rem 0.5rem; font-size: 0.75rem; font-weight: bold; background: linear-gradient(to right, #ef4444, #f97316); color: white; border-radius: 9999px; text-transform: uppercase; flex-shrink: 0; animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;';
+                    badge.textContent = 'NEW';
+                    span.appendChild(badge);
+                }
+                
+                chapterLink.appendChild(span);
+                chapterList.appendChild(chapterLink);
+            });
+        }
+    }
+    
+    function displayNoResults() {
+        resultsCount.classList.remove('hidden');
+        resultsCount.textContent = 'Không tìm thấy chương nào';
+        
+        if (paginationContainer) {
+            paginationContainer.style.display = 'none';
+        }
+        
+        chapterList.innerHTML = '<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">Không tìm thấy chương nào phù hợp với từ khóa tìm kiếm.</p>';
+    }
+    
+    function restoreOriginalChapters() {
+        chapterList.innerHTML = originalChapters;
+        resultsCount.classList.add('hidden');
+        
+        if (paginationContainer) {
+            paginationContainer.style.display = '';
+        }
+    }
+})();
+</script>
 
 <?php get_footer(); ?>

@@ -87,18 +87,47 @@
                 <?php sid_truyen_breadcrumbs(); ?>
             </div>
 
+            <!-- Top Navigation Buttons -->
+            <div class="mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    
+                    <a href="<?php echo $prev_chapter_link; ?>" class="w-full md:w-auto px-6 py-4 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 transition-all group <?php echo $prev_chapter_class; ?>">
+                        <svg class="w-5 h-5 mr-3 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        <span class="font-bold">Chương Trước</span>
+                    </a>
+
+                    <a href="<?php echo esc_url($novel_permalink); ?>" class="hidden md:flex flex-col items-center justify-center text-gray-400 hover:text-primary transition-colors">
+                        <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        <span class="text-xs font-bold uppercase tracking-wider">Danh Sách</span>
+                    </a>
+
+                    <a href="<?php echo $next_chapter_link; ?>" class="w-full md:w-auto px-6 py-4 flex items-center justify-center bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 transition-all group <?php echo $next_chapter_class; ?>">
+                        <span class="font-bold">Chương Sau</span>
+                        <svg class="w-5 h-5 ml-3 text-gray-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+
+                </div>
+                
+                <!-- Mobile List Button -->
+                <div class="md:hidden mt-4">
+                    <a href="<?php echo esc_url($novel_permalink); ?>" class="block w-full text-center py-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-600 dark:text-gray-400 text-sm font-bold">
+                        Danh Sách Chương
+                    </a>
+                </div>
+            </div>
+
             <!-- Chapter Content -->
             <article id="post-<?php the_ID(); ?>" class="chapter-content-wrapper">
                 
                 <header class="text-center mb-12">
-                    <span class="text-xs font-bold tracking-widest text-gray-400 uppercase mb-2 block"><?php echo get_the_date(); ?></span>
-                    <h1 class="text-3xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 font-reading leading-tight mb-4">
+                    <span class="text-xs font-bold tracking-widest text-gray-400 uppercase mb-6 block"><?php echo get_the_date(); ?></span>
+                    <h1 class="text-3xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 font-sans leading-tight mb-4">
                         <?php the_title(); ?>
                     </h1>
                      <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
                 </header>
 
-                <div class="chapter-content prose dark:prose-invert max-w-none text-xl leading-loose font-reading text-gray-800 dark:text-gray-300 md:px-0 selection:bg-primary/20">
+                <div class="chapter-content prose dark:prose-invert max-w-none text-xl leading-loose font-sans text-gray-800 dark:text-gray-300 md:px-0 selection:bg-primary/20">
                     <?php the_content(); ?>
                 </div>
 

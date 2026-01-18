@@ -1006,3 +1006,70 @@ function sid_truyen_handle_ebook_download() {
     }
 }
 add_action( 'init', 'sid_truyen_handle_ebook_download' );
+
+/**
+ * AJAX Handler for Chapter Search
+ */
+function sid_truyen_ajax_search_chapters() {
+	// Verify nonce for security
+	check_ajax_referer( 'chapter_search_nonce', 'nonce' );
+	
+	$search_term = isset( $_POST['search_term'] ) ? sanitize_text_field( $_POST['search_term'] ) : '';
+	$novel_id = isset( $_POST['novel_id'] ) ? intval( $_POST['novel_id'] ) : 0;
+	
+	if ( ! $novel_id || empty( $search_term ) ) {
+		wp_send_json_error( array( 'message' => 'Invalid parameters' ) );
+	}
+	
+	// Convert search term to lowercase for case-insensitive Vietnamese search
+	$search_term_lower = mb_strtolower( $search_term, 'UTF-8' );
+	
+	// Query ALL chapters of this novel first
+	$args = array(
+		'post_type' => 'chapter',
+		'posts_per_page' => -1, // Get all chapters
+		'meta_query' => array(
+			array(
+				'key' => '_sid_chapter_parent_novel',
+				'value' => $novel_id,
+				'compare' => '='
+			)
+		),
+		'orderby' => 'date',
+		'order' => 'DESC' // Newest first
+	);
+	
+	$chapter_query = new WP_Query( $args );
+	$chapters = array();
+	
+	if ( $chapter_query->have_posts() ) {
+		while ( $chapter_query->have_posts() ) {
+			$chapter_query->the_post();
+			
+			// Filter by title in PHP - only include if title contains search term
+			$chapter_title = get_the_title();
+			
+			// Case-insensitive search in title (supports Vietnamese Unicode)
+			$chapter_title_lower = mb_strtolower( $chapter_title, 'UTF-8' );
+			
+			if ( mb_strpos( $chapter_title_lower, $search_term_lower ) !== false ) {
+				// Check if chapter is new (posted within 24 hours)
+				$post_time = get_the_time('U');
+				$current_time = current_time('timestamp');
+				$time_diff = $current_time - $post_time;
+				$is_new = ($time_diff < 86400);
+				
+				$chapters[] = array(
+					'title' => $chapter_title,
+					'permalink' => get_permalink(),
+					'is_new' => $is_new
+				);
+			}
+		}
+		wp_reset_postdata();
+	}
+	
+	wp_send_json_success( array( 'chapters' => $chapters ) );
+}
+add_action( 'wp_ajax_search_chapters', 'sid_truyen_ajax_search_chapters' );
+add_action( 'wp_ajax_nopriv_search_chapters', 'sid_truyen_ajax_search_chapters' );

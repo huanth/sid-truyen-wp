@@ -94,7 +94,7 @@
                                     <?php the_title(); ?>
                                 </a>
                             </div>
-                            <div class="flex-shrink-0 text-xs text-gray-400 italic ml-4">
+                            <div class="flex-shrink-0 text-xs text-black-400 italic ml-4">
                                 <?php echo sid_truyen_time_ago(get_the_time('U')); ?>
                             </div>
                         </div>
