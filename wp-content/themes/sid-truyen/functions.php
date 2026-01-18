@@ -925,8 +925,8 @@ function sid_truyen_seo_meta_tags() {
 }
 add_action( 'wp_head', 'sid_truyen_seo_meta_tags', 5 );
 /**
- * Ebook Download Feature (TXT Format)
- * Handles requests for downloading novels and chapters as .txt files.
+ * Ebook Download Feature (DOC Format)
+ * Handles requests for downloading novels and chapters as .doc files.
  */
 function sid_truyen_handle_ebook_download() {
     if ( isset( $_GET['ebook_download'] ) && isset( $_GET['post_id'] ) ) {
@@ -937,29 +937,30 @@ function sid_truyen_handle_ebook_download() {
             return;
         }
 
-        // Set Headers for Download
-        header('Content-Type: text/plain; charset=utf-8');
+        // Set Headers for DOC Download (HTML format)
+        header('Content-Type: text/html; charset=utf-8');
         header('Content-Description: File Transfer');
-        header('Content-Disposition: attachment; filename="' . get_the_title($post_id) . '.txt"');
+        header('Content-Disposition: attachment; filename="' . sanitize_file_name(get_the_title($post_id)) . '.doc"');
         header('Expires: 0');
         header('Cache-Control: must-revalidate');
         header('Pragma: public');
 
-        // Output BOM for Excel/Windows compatibility with UTF-8
-        echo "\xEF\xBB\xBF";
+        // Start HTML Document
+        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . esc_html(get_the_title($post_id)) . '</title>';
+        echo '<style>body{font-family:"Times New Roman",serif;font-size:14pt;line-height:1.6;}h1{font-size:24pt;font-weight:bold;text-align:center;margin:20pt 0;}h2{font-size:18pt;font-weight:bold;margin:15pt 0 10pt;page-break-before:always;}p{margin:10pt 0;text-align:justify;}.meta{font-size:12pt;color:#666;text-align:center;}</style></head><body>';
 
         // 1. Single Chapter Download
         if ( $post_type === 'chapter' ) {
             $parent_id = get_post_meta( $post_id, '_sid_chapter_parent_novel', true );
             $parent_title = $parent_id ? get_the_title( $parent_id ) : '';
             
-            echo "Truyện: " . $parent_title . "\n";
-            echo get_the_title( $post_id ) . "\n";
-            echo "Nguồn: " . home_url() . "\n";
-			echo "Link chương: " . get_permalink($post_id) . "\n";
-            echo str_repeat("-", 50) . "\n\n";
+            echo '<h1>' . esc_html($parent_title) . '</h1>';
+            echo '<h2 style="page-break-before:avoid;">' . esc_html(get_the_title($post_id)) . '</h2>';
+            echo '<p class="meta">Nguồn: ' . esc_html(home_url()) . '</p>';
+            echo '<p class="meta">Link: ' . esc_html(get_permalink($post_id)) . '</p><br/>';
             
-            echo wp_strip_all_tags( get_post_field( 'post_content', $post_id ) );
+            $content = wpautop(get_post_field('post_content', $post_id));
+            echo $content;
         }
 
         // 2. Full Novel Download
@@ -967,15 +968,14 @@ function sid_truyen_handle_ebook_download() {
             $novel_title = get_the_title( $post_id );
             $author = get_post_meta( $post_id, '_sid_novel_author', true );
             
-            echo "Tên truyện: " . $novel_title . "\n";
-            echo "Tác giả: " . ( $author ? $author : 'Đang cập nhật' ) . "\n";
-            echo "Nguồn: " . home_url() . "\n";
-			echo "Link truyện: " . get_permalink($post_id) . "\n";
-            echo str_repeat("=", 50) . "\n\n";
+            echo '<h1>' . esc_html($novel_title) . '</h1>';
+            echo '<p class="meta"><strong>Tác giả:</strong> ' . esc_html($author ? $author : 'Đang cập nhật') . '</p>';
+            echo '<p class="meta"><strong>Nguồn:</strong> ' . esc_html(home_url()) . '</p>';
+            echo '<p class="meta">Link: ' . esc_html(get_permalink($post_id)) . '</p><br/>';
             
-            echo "GIỚI THIỆU:\n";
-            echo wp_strip_all_tags( get_post_field( 'post_content', $post_id ) ) . "\n\n";
-            echo str_repeat("=", 50) . "\n\n";
+            echo '<h2 style="page-break-before:avoid;">GIỚI THIỆU</h2>';
+            $intro = wpautop(get_post_field('post_content', $post_id));
+            echo $intro;
 
             // Query All Chapters
             $chapters = get_posts(array(
@@ -989,19 +989,20 @@ function sid_truyen_handle_ebook_download() {
 
             if ( $chapters ) {
                 foreach ( $chapters as $chapter ) {
-                    echo "--- " . get_the_title( $chapter->ID ) . " ---\n\n";
-                    echo wp_strip_all_tags( $chapter->post_content ) . "\n\n";
-                    echo str_repeat("_", 30) . "\n\n";
+                    echo '<h2>' . esc_html(get_the_title($chapter->ID)) . '</h2>';
+                    $chapter_content = wpautop($chapter->post_content);
+                    echo $chapter_content;
                     
                     // Prevent timeout / memory issues for large novels
                     if ( ob_get_level() > 0 ) ob_flush();
                     flush();
                 }
             } else {
-                echo "Truyện này chưa có chương nào.";
+                echo '<p>Truyện này chưa có chương nào.</p>';
             }
         }
 
+        echo '</body></html>';
         exit;
     }
 }
