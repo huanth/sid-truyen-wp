@@ -86,9 +86,18 @@
 
                             <!-- Status Badge -->
                             <?php
+                            // Status Badge with Hot priority based on views
+                            $views = (int) get_post_meta(get_the_ID(), '_sid_novel_views', true);
                             $status = get_post_meta(get_the_ID(), '_sid_novel_status', true);
-                            if ($status === 'completed') : ?>
-                                <span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-1 rounded shadow-lg font-bold uppercase tracking-wider">Full</span>
+                            
+                            if ($views >= 1000) : ?>
+                                <span class="absolute top-2 right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] px-2 py-1 rounded shadow-lg font-bold uppercase tracking-wider">🔥 Hot</span>
+                            <?php elseif ($status === 'completed') : ?>
+                                <span class="absolute top-2 right-2 bg-green-500 text-white text-[10px] px-2 py-1 rounded shadow-lg font-bold uppercase tracking-wider">Hoàn thành</span>
+                            <?php elseif ($status === 'ongoing') : ?>
+                                <span class="absolute top-2 right-2 bg-blue-500 text-white text-[10px] px-2 py-1 rounded shadow-lg font-bold uppercase tracking-wider">Đang ra</span>
+                            <?php elseif ($status === 'paused') : ?>
+                                <span class="absolute top-2 right-2 bg-red-500 text-white text-[10px] px-2 py-1 rounded shadow-lg font-bold uppercase tracking-wider">Tạm dừng</span>
                             <?php endif; ?>
                         </div>
                         <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100 group-hover:text-primary transition-colors line-clamp-2">
