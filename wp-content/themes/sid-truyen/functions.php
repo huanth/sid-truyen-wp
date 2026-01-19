@@ -745,6 +745,17 @@ function sid_truyen_add_chapter_og_image() {
     }
 }
 add_action( 'wp_head', 'sid_truyen_add_chapter_og_image' );
+
+/**
+ * Add supplementary favicon.ico for better Google SERP visibility
+ * This complements WordPress Site Icon (not replaces it)
+ */
+function sid_truyen_add_favicon_ico() {
+    // WordPress Site Icon already outputs favicon tags via wp_head()
+    // We just add shortcut icon pointing to root favicon.ico for Google
+    echo '<link rel="shortcut icon" href="' . esc_url( home_url( '/favicon.ico' ) ) . '" />' . "\n";
+}
+add_action( 'wp_head', 'sid_truyen_add_favicon_ico', 1 ); // Priority 1 to appear early
 /**
  * Modify Main Query for Archives
  */
@@ -781,149 +792,15 @@ function sid_truyen_modify_archive_query( $query ) {
     }
 }
 add_action( 'pre_get_posts', 'sid_truyen_modify_archive_query' );
+
 /**
- * SEO & Social Meta Tags
- * Handles Open Graph and Twitter Cards for Homepage, Novels, Chapters, and Archives.
+ * Change og:locale from en_US to vi_VN for Yoast SEO
  */
-function sid_truyen_seo_meta_tags() {
-    global $post;
-
-    // Default Values
-    $site_name = get_bloginfo('name');
-    $title = get_bloginfo('name');
-    $description = get_bloginfo('description');
-    $image = get_template_directory_uri() . '/assets/images/logo.png'; // Default fallback
-    $url = home_url();
-    $type = 'website';
-
-    // 1. Homepage
-    if ( is_front_page() || is_home() ) {
-        $title = $site_name . ' - Đọc Truyện Chữ Online';
-        $desc = get_bloginfo('description');
-        if ( ! $desc || $desc == 'Just another WordPress site' ) {
-            $description = "Kho truyện chữ hàng đầu với hàng ngàn đầu truyện hấp dẫn đa dạng thể loại (Tiên Hiệp, Kiếm Hiệp, Ngôn Tình). Cập nhật liên tục, giao diện thân thiện, đọc truyện miễn phí.";
-        } else {
-            $description = $desc;
-        }
-        $url = home_url();
-    }
-
-    // 2. Single Novel
-    elseif ( is_singular('novel') ) {
-        $title = get_the_title();
-        $type = 'article';
-        $url = get_permalink();
-        
-        // Description: Excerpt or trimmed content
-        if ( has_excerpt() ) {
-            $description = get_the_excerpt();
-        } else {
-            $content = wp_strip_all_tags( get_the_content() );
-            $description = mb_substr( $content, 0, 160 ) . '...';
-        }
-
-        // Image: Featured Image
-        if ( has_post_thumbnail() ) {
-            $image = get_the_post_thumbnail_url( get_the_ID(), 'full' );
-        }
-    }
-
-    // 3. Single Chapter
-    elseif ( is_singular('chapter') ) {
-        $type = 'article';
-        $url = get_permalink();
-        
-        // Parent Novel Info
-        $parent_id = get_post_meta( get_the_ID(), '_sid_chapter_parent_novel', true );
-        $parent_title = $parent_id ? get_the_title( $parent_id ) : '';
-        
-        // Title: Chapter Name - Novel Name
-        $title = get_the_title() . ( $parent_title ? ' - ' . $parent_title : '' );
-
-        // Description
-        $description = "Đọc truyện " . $parent_title . " - " . get_the_title() . " online mới nhất, cập nhật nhanh nhất tại " . $site_name;
-
-        // Image: Parent Novel Cover
-        if ( $parent_id && has_post_thumbnail( $parent_id ) ) {
-            $image = get_the_post_thumbnail_url( $parent_id, 'full' );
-        }
-    }
-
-    // 4. Search Results
-    elseif ( is_search() ) {
-        $title = 'Kết quả tìm kiếm: ' . get_search_query();
-        $description = 'Kết quả tìm kiếm cho từ khóa "' . get_search_query() . '" tại ' . $site_name;
-        $url = home_url( '?s=' . get_search_query() );
-    }
-
-    // 5. Post Type Archives & Custom Pages
-    elseif ( is_post_type_archive( 'novel' ) ) {
-        $title = post_type_archive_title('', false);
-        $url = get_post_type_archive_link( 'novel' );
-        $description = 'Danh sách truyện mới nhất, cập nhật liên tục tại ' . $site_name;
-        
-        // Custom Canonical URLs and Meta for Hot & Completed Pages
-        if ( get_query_var( 'v_sort' ) === 'views' ) {
-            $url = home_url( '/truyen-hot/' );
-            $title = 'Truyện Hot';
-            $description = 'Danh sách truyện hot, truyện xem nhiều nhất, được yêu thích nhất tháng tại ' . $site_name;
-        } elseif ( get_query_var( 'v_status' ) === 'completed' ) {
-            $url = home_url( '/truyen-hoan-thanh/' );
-            $title = 'Truyện đã hoàn thành';
-            $description = 'Danh sách truyện đã hoàn thành (Full), truyện ngôn tình, tiên hiệp đã ra đủ chương tại ' . $site_name;
-        }
-
-        if ( is_paged() ) {
-            $paged = get_query_var( 'paged' );
-            $url = user_trailingslashit( trailingslashit( $url ) . 'page/' . $paged );
-            $title .= ' - Trang ' . $paged;
-            $description .= ' - Trang ' . $paged;
-        }
-    }
-
-    // 6. Taxonomies (Genre, Category, etc.)
-    elseif ( is_archive() ) {
-        $title = get_the_archive_title();
-        $url = get_term_link( get_queried_object() );
-        $type = 'object';
-
-        if ( term_description() ) {
-            $description = wp_strip_all_tags( term_description() );
-        } else {
-            $description = 'Danh sách truyện ' . $title . ' mới nhất tại ' . $site_name;
-        }
-    }
-
-    // Clean up
-    $title = esc_attr( $title );
-    $description = esc_attr( $description );
-    $image = esc_url( $image );
-    $url = esc_url( $url );
-    $site_name = esc_attr( $site_name );
-
-    // Output Meta Tags
-    echo "\n<!-- SEO & Social Meta Tags -->\n";
-    
-    // Open Graph
-    echo '<meta name="description" content="' . $description . '" />' . "\n";
-    echo '<meta property="og:site_name" content="' . $site_name . '" />' . "\n";
-    echo '<meta property="og:type" content="' . $type . '" />' . "\n";
-    echo '<meta property="og:title" content="' . $title . '" />' . "\n";
-    echo '<meta property="og:description" content="' . $description . '" />' . "\n";
-    echo '<meta property="og:url" content="' . $url . '" />' . "\n";
-    echo '<meta property="og:image" content="' . $image . '" />' . "\n";
-    echo '<meta property="og:image:width" content="1200" />' . "\n";
-    echo '<meta property="og:image:height" content="630" />' . "\n";
-
-    // Twitter Card
-    echo '<meta name="twitter:card" content="summary_large_image" />' . "\n";
-    echo '<meta name="twitter:title" content="' . $title . '" />' . "\n";
-    echo '<meta name="twitter:description" content="' . $description . '" />' . "\n";
-    echo '<meta name="twitter:image" content="' . $image . '" />' . "\n";
-    
-    echo "<!-- End SEO Meta Tags -->\n\n";
+function sid_truyen_change_og_locale( $locale ) {
+    return 'vi_VN';
 }
-add_action( 'wp_head', 'sid_truyen_seo_meta_tags', 5 );
+add_filter( 'wpseo_locale', 'sid_truyen_change_og_locale' );
+add_filter( 'wpseo_og_locale', 'sid_truyen_change_og_locale' );
 /**
  * Ebook Download Feature (DOC Format)
  * Handles requests for downloading novels and chapters as .doc files.
