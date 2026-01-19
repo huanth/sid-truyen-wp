@@ -756,6 +756,18 @@ function sid_truyen_add_favicon_ico() {
     echo '<link rel="shortcut icon" href="' . esc_url( home_url( '/favicon.ico' ) ) . '" />' . "\n";
 }
 add_action( 'wp_head', 'sid_truyen_add_favicon_ico', 1 ); // Priority 1 to appear early
+
+/**
+ * Add Google AdSense Auto Ads Code
+ */
+function sid_truyen_add_adsense_code() {
+    ?>
+    <!-- Google AdSense Auto Ads -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1486737668365116"
+     crossorigin="anonymous"></script>
+    <?php
+}
+add_action( 'wp_head', 'sid_truyen_add_adsense_code', 2 );
 /**
  * Modify Main Query for Archives
  */
