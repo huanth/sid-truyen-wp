@@ -100,7 +100,7 @@
                    <h2 class="text-xl font-bold mb-4 border-b border-gray-200 dark:border-gray-700 pb-2 text-gray-800 dark:text-gray-100">
                         Giới Thiệu
                     </h2>
-                    <div class="text-gray-600 dark:text-gray-300 leading-relaxed space-y-4 font-reading">
+                    <div class="text-gray-600 dark:text-gray-300 leading-relaxed space-y-4 font-sans">
                         <?php the_content(); ?>
                     </div>
                 </div>
