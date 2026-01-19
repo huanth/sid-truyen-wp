@@ -45,19 +45,26 @@
 			<!-- Desktop Navigation -->
 			<!-- Logic: 'hidden' (mobile default) -> 'lg:flex' (desktop visible) -->
 			<div class="hidden lg:flex items-center gap-1 ml-4">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="px-3 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
+				<?php
+				$current_url = home_url($_SERVER['REQUEST_URI']);
+				$is_home = is_front_page();
+				$is_archive = is_post_type_archive('novel') && !get_query_var('v_sort') && !get_query_var('v_status');
+				$is_hot = get_query_var('v_sort') === 'views' || strpos($current_url, '/truyen-hot/') !== false;
+				$is_completed = get_query_var('v_status') === 'completed' || strpos($current_url, '/truyen-hoan-thanh/') !== false;
+				?>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="px-3 py-2 text-sm font-bold <?php echo $is_home ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300'; ?> hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
 					Trang chủ
 				</a>
 				
-				<a href="<?php echo get_post_type_archive_link( 'novel' ); ?>" class="px-3 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
+				<a href="<?php echo get_post_type_archive_link( 'novel' ); ?>" class="px-3 py-2 text-sm font-bold <?php echo $is_archive ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300'; ?> hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
 					Tất cả truyện
 				</a>
 
-				<a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="px-3 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
+				<a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="px-3 py-2 text-sm font-bold <?php echo $is_hot ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300'; ?> hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
 					Truyện hot 🔥
 				</a>
 
-				<a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="px-3 py-2 text-sm font-bold text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
+				<a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="px-3 py-2 text-sm font-bold <?php echo $is_completed ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300'; ?> hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200 whitespace-nowrap">
 					Truyện hoàn thành
 				</a>
 			</div>
@@ -84,19 +91,19 @@
 			<!-- Mobile Navigation (Hidden by default, toggled via JS) -->
 			<div id="mobile-menu" class="hidden lg:hidden flex-col w-full basis-full order-last mt-2 border-t border-gray-100 dark:border-gray-800 pt-2 animate-fadeIn">
 				<div class="grid grid-cols-2 gap-2">
-					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
+					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="px-4 py-3 text-sm font-bold <?php echo $is_home ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800'; ?> rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
 						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
 						Trang chủ
 					</a>
-					<a href="<?php echo get_post_type_archive_link( 'novel' ); ?>" class="px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
+					<a href="<?php echo get_post_type_archive_link( 'novel' ); ?>" class="px-4 py-3 text-sm font-bold <?php echo $is_archive ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800'; ?> rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
 						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
 						Tất cả truyện
 					</a>
-					<a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
+					<a href="<?php echo esc_url( home_url( '/truyen-hot/' ) ); ?>" class="px-4 py-3 text-sm font-bold <?php echo $is_hot ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800'; ?> rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
 						<svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"></path></svg>
 						Truyện hot
 					</a>
-					<a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
+					<a href="<?php echo esc_url( home_url( '/truyen-hoan-thanh/' ) ); ?>" class="px-4 py-3 text-sm font-bold <?php echo $is_completed ? 'text-primary bg-primary/10' : 'text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800'; ?> rounded-xl hover:bg-primary/10 hover:text-primary transition-all flex items-center gap-2">
 						<svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
 						Đã hoàn thành
 					</a>
