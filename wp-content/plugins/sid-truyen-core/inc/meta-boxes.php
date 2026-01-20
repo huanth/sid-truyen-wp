@@ -74,6 +74,16 @@ function sid_core_add_meta_boxes() {
         'side',
         'high'
     );
+    
+    // Chapter Cover Image (from parent novel)
+    add_meta_box(
+        'sid_chapter_cover',
+        __( 'Ảnh bìa truyện', 'sid-truyen-core' ),
+        'sid_chapter_cover_callback',
+        'chapter',
+        'side',
+        'default'
+    );
 }
 add_action( 'add_meta_boxes', 'sid_core_add_meta_boxes' );
 
@@ -171,3 +181,103 @@ function sid_core_save_meta_data( $post_id ) {
     }
 }
 add_action( 'save_post', 'sid_core_save_meta_data' );
+
+// Chapter Cover Image Callback
+function sid_chapter_cover_callback( $post ) {
+    $parent_id = get_post_meta( $post->ID, '_sid_chapter_parent_novel', true );
+    
+    if ( ! $parent_id ) {
+        ?>
+        <p class="description" style="color: #999;">
+            <?php _e( 'Vui lòng chọn truyện gốc để hiển thị ảnh bìa.', 'sid-truyen-core' ); ?>
+        </p>
+        <?php
+        return;
+    }
+    
+    // Get parent novel's cover image
+    if ( has_post_thumbnail( $parent_id ) ) {
+        $thumbnail_url = get_the_post_thumbnail_url( $parent_id, 'medium' );
+        $novel_title = get_the_title( $parent_id );
+        $novel_edit_link = get_edit_post_link( $parent_id );
+        ?>
+        <div style="text-align: center;">
+            <img src="<?php echo esc_url( $thumbnail_url ); ?>" 
+                 alt="<?php echo esc_attr( $novel_title ); ?>" 
+                 style="max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <p style="margin-top: 10px; font-size: 13px;">
+                <strong><?php echo esc_html( $novel_title ); ?></strong>
+            </p>
+            <p class="description">
+                Ảnh bìa này sẽ được sử dụng làm thumbnail SEO cho chương.
+                <br>
+                <a href="<?php echo esc_url( $novel_edit_link ); ?>" target="_blank">Chỉnh sửa truyện gốc</a>
+            </p>
+        </div>
+        <?php
+    } else {
+        $novel_title = get_the_title( $parent_id );
+        $novel_edit_link = get_edit_post_link( $parent_id );
+        ?>
+        <p class="description" style="color: #d63638;">
+            <?php _e( 'Truyện gốc chưa có ảnh bìa.', 'sid-truyen-core' ); ?>
+            <br>
+            <a href="<?php echo esc_url( $novel_edit_link ); ?>" target="_blank">Thêm ảnh bìa cho truyện</a>
+        </p>
+        <?php
+    }
+}
+
+/**
+ * Set Yoast SEO thumbnail for chapters to use parent novel's cover image
+ */
+function sid_core_set_chapter_yoast_image( $image ) {
+    // Only apply to chapter post type
+    if ( ! is_singular( 'chapter' ) ) {
+        return $image;
+    }
+    
+    $post_id = get_the_ID();
+    $parent_id = get_post_meta( $post_id, '_sid_chapter_parent_novel', true );
+    
+    // If parent novel exists and has thumbnail, use it
+    if ( $parent_id && has_post_thumbnail( $parent_id ) ) {
+        $thumbnail_url = get_the_post_thumbnail_url( $parent_id, 'full' );
+        if ( $thumbnail_url ) {
+            return $thumbnail_url;
+        }
+    }
+    
+    return $image;
+}
+add_filter( 'wpseo_opengraph_image', 'sid_core_set_chapter_yoast_image', 10, 1 );
+add_filter( 'wpseo_twitter_image', 'sid_core_set_chapter_yoast_image', 10, 1 );
+
+/**
+ * Set Yoast SEO image ID for chapters (for meta box display)
+ */
+function sid_core_set_chapter_yoast_image_id( $image_id ) {
+    // Only apply to chapter post type in admin
+    if ( ! is_admin() ) {
+        return $image_id;
+    }
+    
+    global $post;
+    if ( ! $post || get_post_type( $post ) !== 'chapter' ) {
+        return $image_id;
+    }
+    
+    $parent_id = get_post_meta( $post->ID, '_sid_chapter_parent_novel', true );
+    
+    // If parent novel exists and has thumbnail, use it
+    if ( $parent_id && has_post_thumbnail( $parent_id ) ) {
+        $thumbnail_id = get_post_thumbnail_id( $parent_id );
+        if ( $thumbnail_id ) {
+            return $thumbnail_id;
+        }
+    }
+    
+    return $image_id;
+}
+add_filter( 'wpseo_opengraph_image_id', 'sid_core_set_chapter_yoast_image_id', 10, 1 );
+add_filter( 'wpseo_twitter_image_id', 'sid_core_set_chapter_yoast_image_id', 10, 1 );
